@@ -22,8 +22,6 @@ const writeFiles = require('./files').writeFiles;
 const packagejs = require('../../package.json');
 const constants = require('../generator-constants');
 
-let useBlueprint;
-
 module.exports = class extends BaseBlueprintGenerator {
     constructor(args, opts) {
         super(args, opts);
@@ -40,13 +38,11 @@ module.exports = class extends BaseBlueprintGenerator {
         const blueprint = this.options.blueprint || this.configOptions.blueprint || this.config.get('blueprint');
         if (!opts.fromBlueprint) {
             // use global variable since getters dont have access to instance property
-            useBlueprint = this.composeBlueprint(blueprint, 'common', {
+            this.useBlueprint = this.composeBlueprint(blueprint, 'common', {
                 'from-cli': this.options['from-cli'],
                 configOptions: this.configOptions,
                 force: this.options.force
             });
-        } else {
-            useBlueprint = false;
         }
     }
 
@@ -127,8 +123,7 @@ module.exports = class extends BaseBlueprintGenerator {
     }
 
     get initializing() {
-        if (useBlueprint) return;
-        return this._initializing();
+        return super.initializing();
     }
 
     // Public API method used by the getter and also by Blueprints
@@ -147,8 +142,7 @@ module.exports = class extends BaseBlueprintGenerator {
     }
 
     get configuring() {
-        if (useBlueprint) return;
-        return this._configuring();
+        return super.configuring();
     }
 
     // Public API method used by the getter and also by Blueprints
@@ -169,8 +163,7 @@ module.exports = class extends BaseBlueprintGenerator {
     }
 
     get default() {
-        if (useBlueprint) return;
-        return this._default();
+        return super.default();
     }
 
     // Public API method used by the getter and also by Blueprints
@@ -179,7 +172,6 @@ module.exports = class extends BaseBlueprintGenerator {
     }
 
     get writing() {
-        if (useBlueprint) return;
-        return this._writing();
+        return super.writing();
     }
 };

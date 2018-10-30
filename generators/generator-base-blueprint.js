@@ -25,9 +25,19 @@ const BaseGenerator = require('./generator-base');
  * The method signatures in public API should not be changed without a major version change
  */
 module.exports = class extends BaseGenerator {
+    constructor(args, opts) {
+        super(args, opts);
+        this.useBlueprint = false;
+    }
+
     // Public API method used by the getter and also by Blueprints
     _initializing() {
         return {};
+    }
+
+    initializing() {
+        if (this.useBlueprint) return;
+        return this._initializing();
     }
 
     // Public API method used by the getter and also by Blueprints
@@ -35,9 +45,19 @@ module.exports = class extends BaseGenerator {
         return {};
     }
 
+    prompting() {
+        if (this.useBlueprint) return;
+        return this._prompting();
+    }
+
     // Public API method used by the getter and also by Blueprints
     _configuring() {
         return {};
+    }
+
+    configuring() {
+        if (this.useBlueprint) return;
+        return this._configuring();
     }
 
     // Public API method used by the getter and also by Blueprints
@@ -45,9 +65,19 @@ module.exports = class extends BaseGenerator {
         return {};
     }
 
+    default() {
+        if (this.useBlueprint) return;
+        return this._default();
+    }
+
     // Public API method used by the getter and also by Blueprints
     _writing() {
         return {};
+    }
+
+    writing() {
+        if (this.useBlueprint) return;
+        return this._writing();
     }
 
     // Public API method used by the getter and also by Blueprints
@@ -55,8 +85,18 @@ module.exports = class extends BaseGenerator {
         return {};
     }
 
+    install() {
+        if (this.useBlueprint) return;
+        return this._install();
+    }
+
     // Public API method used by the getter and also by Blueprints
     _end() {
         return {};
+    }
+
+    end() {
+        if (this.useBlueprint) return;
+        return this._end();
     }
 };

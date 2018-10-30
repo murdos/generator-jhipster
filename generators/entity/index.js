@@ -29,7 +29,6 @@ const statistics = require('../statistics');
 
 /* constants used throughout */
 const SUPPORTED_VALIDATION_RULES = constants.SUPPORTED_VALIDATION_RULES;
-let useBlueprint;
 
 module.exports = class extends BaseBlueprintGenerator {
     constructor(args, opts) {
@@ -125,14 +124,12 @@ module.exports = class extends BaseBlueprintGenerator {
         const blueprint = this.config.get('blueprint');
         if (!opts.fromBlueprint) {
             // use global variable since getters dont have access to instance property
-            useBlueprint = this.composeBlueprint(blueprint, 'entity', {
+            this.useBlueprint = this.composeBlueprint(blueprint, 'entity', {
                 'skip-install': this.options['skip-install'],
                 'from-cli': this.options['from-cli'],
                 force: this.options.force,
                 arguments: [this.context.name]
             });
-        } else {
-            useBlueprint = false;
         }
     }
 
@@ -317,8 +314,7 @@ module.exports = class extends BaseBlueprintGenerator {
     }
 
     get initializing() {
-        if (useBlueprint) return;
-        return this._initializing();
+        return super.initializing();
     }
 
     // Public API method used by the getter and also by Blueprints
@@ -341,8 +337,7 @@ module.exports = class extends BaseBlueprintGenerator {
     }
 
     get prompting() {
-        if (useBlueprint) return;
-        return this._prompting();
+        return super.prompting();
     }
 
     // Public API method used by the getter and also by Blueprints
@@ -1036,8 +1031,7 @@ module.exports = class extends BaseBlueprintGenerator {
     }
 
     get configuring() {
-        if (useBlueprint) return;
-        return this._configuring();
+        return super.configuring();
     }
 
     // Public API method used by the getter and also by Blueprints
@@ -1089,8 +1083,7 @@ module.exports = class extends BaseBlueprintGenerator {
     }
 
     get writing() {
-        if (useBlueprint) return;
-        return this._writing();
+        return super.writing();
     }
 
     // Public API method used by the getter and also by Blueprints
@@ -1128,7 +1121,6 @@ module.exports = class extends BaseBlueprintGenerator {
     }
 
     get install() {
-        if (useBlueprint) return;
-        return this._install();
+        return super.install();
     }
 };
