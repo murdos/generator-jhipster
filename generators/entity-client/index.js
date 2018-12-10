@@ -27,6 +27,7 @@ let useBlueprint;
 module.exports = class extends BaseBlueprintGenerator {
     constructor(args, opts) {
         super(args, opts);
+        this.context = opts.context;
         utils.copyObjectProps(this, this.options.context);
         const blueprint = this.config.get('blueprint');
         if (!opts.fromBlueprint) {
@@ -41,6 +42,20 @@ module.exports = class extends BaseBlueprintGenerator {
         } else {
             useBlueprint = false;
         }
+    }
+
+    // Public API method used by the getter and also by Blueprints
+    _configuring() {
+        return {
+            copyObjectProps() {
+                utils.copyObjectProps(this, this.context);
+            }
+        };
+    }
+
+    get configuring() {
+        if (useBlueprint) return;
+        return this._configuring();
     }
 
     // Public API method used by the getter and also by Blueprints

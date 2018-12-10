@@ -27,6 +27,7 @@ let useBlueprint;
 module.exports = class extends BaseBlueprintGenerator {
     constructor(args, opts) {
         super(args, opts);
+        this.context = opts.context;
         utils.copyObjectProps(this, opts.context);
         if (this.databaseType === 'cassandra') {
             this.pkType = 'UUID';
@@ -43,6 +44,20 @@ module.exports = class extends BaseBlueprintGenerator {
         } else {
             useBlueprint = false;
         }
+    }
+
+    // Public API method used by the getter and also by Blueprints
+    _configuring() {
+        return {
+            copyObjectProps() {
+                utils.copyObjectProps(this, this.context);
+            }
+        };
+    }
+
+    get configuring() {
+        if (useBlueprint) return;
+        return this._configuring();
     }
 
     // Public API method used by the getter and also by Blueprints

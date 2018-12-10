@@ -348,6 +348,40 @@ module.exports = class extends BaseBlueprintGenerator {
     // Public API method used by the getter and also by Blueprints
     _configuring() {
         return {
+            composeServer() {
+                const context = this.context;
+                if (context.skipServer) return;
+
+                this.composeWith(require.resolve('../entity-server'), {
+                    context,
+                    force: context.options.force,
+                    debug: context.isDebugEnabled
+                });
+            },
+
+            composeClient() {
+                const context = this.context;
+                if (context.skipClient) return;
+
+                this.composeWith(require.resolve('../entity-client'), {
+                    context,
+                    'skip-install': context.options['skip-install'],
+                    force: context.options.force,
+                    debug: context.isDebugEnabled
+                });
+            },
+
+            composeI18n() {
+                const context = this.context;
+                if (context.skipClient) return;
+
+                this.composeWith(require.resolve('../entity-i18n'), {
+                    context,
+                    'skip-install': context.options['skip-install'],
+                    force: context.options.force,
+                    debug: context.isDebugEnabled
+                });
+            },
             validateFile() {
                 const context = this.context;
                 if (!context.useConfigurationFile) {
@@ -1050,41 +1084,6 @@ module.exports = class extends BaseBlueprintGenerator {
                     this.removeFile(`${constants.ANGULAR_DIR}entities/${entityName}/${entityName}.model.ts`);
                 }
             },
-
-            composeServer() {
-                const context = this.context;
-                if (context.skipServer) return;
-
-                this.composeWith(require.resolve('../entity-server'), {
-                    context,
-                    force: context.options.force,
-                    debug: context.isDebugEnabled
-                });
-            },
-
-            composeClient() {
-                const context = this.context;
-                if (context.skipClient) return;
-
-                this.composeWith(require.resolve('../entity-client'), {
-                    context,
-                    'skip-install': context.options['skip-install'],
-                    force: context.options.force,
-                    debug: context.isDebugEnabled
-                });
-            },
-
-            composeI18n() {
-                const context = this.context;
-                if (context.skipClient) return;
-
-                this.composeWith(require.resolve('../entity-i18n'), {
-                    context,
-                    'skip-install': context.options['skip-install'],
-                    force: context.options.force,
-                    debug: context.isDebugEnabled
-                });
-            }
         };
     }
 
