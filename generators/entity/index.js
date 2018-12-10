@@ -686,24 +686,9 @@ module.exports = class extends BaseBlueprintGenerator {
                 context.entityInstance = _.lowerFirst(entityName);
                 context.entityInstancePlural = pluralize(context.entityInstance);
                 context.entityApiUrl = entityNamePluralizedAndSpinalCased;
-                context.entityFileName = _.kebabCase(context.entityNameCapitalized + _.upperFirst(context.entityAngularJSSuffix));
-                context.entityFolderName = this.getEntityFolderName(context.clientRootFolder, context.entityFileName);
-                context.entityModelFileName = context.entityFolderName;
-                context.entityParentPathAddition = this.getEntityParentPathAddition(context.clientRootFolder);
-                context.entityPluralFileName = entityNamePluralizedAndSpinalCased + context.entityAngularJSSuffix;
-                context.entityServiceFileName = context.entityFileName;
-                context.entityAngularName = context.entityClass + this.upperFirstCamelCase(context.entityAngularJSSuffix);
-                context.entityReactName = context.entityClass + this.upperFirstCamelCase(context.entityAngularJSSuffix);
-                context.entityStateName = _.kebabCase(context.entityAngularName);
-                context.entityUrl = context.entityStateName;
                 context.entityTranslationKey = context.clientRootFolder
                     ? _.camelCase(`${context.clientRootFolder}-${context.entityInstance}`)
                     : context.entityInstance;
-                context.entityTranslationKeyMenu = _.camelCase(
-                    context.clientRootFolder ? `${context.clientRootFolder}-${context.entityStateName}` : context.entityStateName
-                );
-                context.jhiTablePrefix = this.getTableName(context.jhiPrefix);
-                context.reactiveRepositories = context.reactive && ['mongodb', 'cassandra', 'couchbase'].includes(context.databaseType);
 
                 context.fieldsContainDate = false;
                 context.fieldsContainInstant = false;
@@ -726,8 +711,6 @@ module.exports = class extends BaseBlueprintGenerator {
                     context.relationships = [];
                 }
                 context.differentRelationships = {};
-                context.i18nToLoad = [context.entityInstance];
-                context.i18nKeyPrefix = `${context.angularAppName}.${context.entityTranslationKey}`;
 
                 // Load in-memory data for fields
                 context.fields.forEach(field => {
@@ -736,10 +719,6 @@ module.exports = class extends BaseBlueprintGenerator {
                         field.fieldType = 'Instant';
                     }
                     const fieldType = field.fieldType;
-
-                    if (!['Instant', 'ZonedDateTime', 'Boolean'].includes(fieldType)) {
-                        context.fieldsIsReactAvField = true;
-                    }
 
                     const nonEnumType = [
                         'String',
@@ -761,64 +740,8 @@ module.exports = class extends BaseBlueprintGenerator {
                         field.fieldIsEnum = false;
                     }
 
-                    if (field.fieldIsEnum === true) {
-                        context.i18nToLoad.push(field.enumInstance);
-                    }
-
-                    if (_.isUndefined(field.fieldNameCapitalized)) {
-                        field.fieldNameCapitalized = _.upperFirst(field.fieldName);
-                    }
-
-                    if (_.isUndefined(field.fieldNameUnderscored)) {
-                        field.fieldNameUnderscored = _.snakeCase(field.fieldName);
-                    }
-
-                    if (_.isUndefined(field.fieldNameAsDatabaseColumn)) {
-                        const fieldNameUnderscored = _.snakeCase(field.fieldName);
-                        const jhiFieldNamePrefix = this.getColumnName(context.jhiPrefix);
-                        if (jhiCore.isReservedTableName(fieldNameUnderscored, context.databaseType)) {
-                            field.fieldNameAsDatabaseColumn = `${jhiFieldNamePrefix}_${fieldNameUnderscored}`;
-                        } else {
-                            field.fieldNameAsDatabaseColumn = fieldNameUnderscored;
-                        }
-                    }
-
                     if (_.isUndefined(field.fieldNameHumanized)) {
                         field.fieldNameHumanized = _.startCase(field.fieldName);
-                    }
-
-                    if (_.isUndefined(field.fieldInJavaBeanMethod)) {
-                        // Handle the specific case when the second letter is capitalized
-                        // See http://stackoverflow.com/questions/2948083/naming-convention-for-getters-setters-in-java
-                        if (field.fieldName.length > 1) {
-                            const firstLetter = field.fieldName.charAt(0);
-                            const secondLetter = field.fieldName.charAt(1);
-                            if (firstLetter === firstLetter.toLowerCase() && secondLetter === secondLetter.toUpperCase()) {
-                                field.fieldInJavaBeanMethod = firstLetter.toLowerCase() + field.fieldName.slice(1);
-                            } else {
-                                field.fieldInJavaBeanMethod = _.upperFirst(field.fieldName);
-                            }
-                        } else {
-                            field.fieldInJavaBeanMethod = _.upperFirst(field.fieldName);
-                        }
-                    }
-
-                    if (_.isUndefined(field.fieldValidateRulesPatternJava)) {
-                        field.fieldValidateRulesPatternJava = field.fieldValidateRulesPattern
-                            ? field.fieldValidateRulesPattern.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
-                            : field.fieldValidateRulesPattern;
-                    }
-
-                    if (_.isUndefined(field.fieldValidateRulesPatternAngular)) {
-                        field.fieldValidateRulesPatternAngular = field.fieldValidateRulesPattern
-                            ? field.fieldValidateRulesPattern.replace(/"/g, '&#34;')
-                            : field.fieldValidateRulesPattern;
-                    }
-
-                    if (_.isUndefined(field.fieldValidateRulesPatternReact)) {
-                        field.fieldValidateRulesPatternReact = field.fieldValidateRulesPattern
-                            ? field.fieldValidateRulesPattern.replace(/'/g, "\\'")
-                            : field.fieldValidateRulesPattern;
                     }
 
                     field.fieldValidate = _.isArray(field.fieldValidateRules) && field.fieldValidateRules.length >= 1;
@@ -880,31 +803,11 @@ module.exports = class extends BaseBlueprintGenerator {
                         relationship.relationshipFieldNamePlural = pluralize(_.lowerFirst(relationship.relationshipName));
                     }
 
-                    if (
-                        _.isUndefined(relationship.otherEntityRelationshipNamePlural) &&
-                        (relationship.relationshipType === 'one-to-many' ||
-                            (relationship.relationshipType === 'many-to-many' && relationship.ownerSide === false) ||
-                            (relationship.relationshipType === 'one-to-one' && relationship.otherEntityName.toLowerCase() !== 'user'))
-                    ) {
-                        relationship.otherEntityRelationshipNamePlural = pluralize(relationship.otherEntityRelationshipName);
-                    }
-
-                    if (_.isUndefined(relationship.otherEntityRelationshipNameCapitalized)) {
-                        relationship.otherEntityRelationshipNameCapitalized = _.upperFirst(relationship.otherEntityRelationshipName);
-                    }
-
-                    if (_.isUndefined(relationship.otherEntityRelationshipNameCapitalizedPlural)) {
-                        relationship.otherEntityRelationshipNameCapitalizedPlural = pluralize(
-                            _.upperFirst(relationship.otherEntityRelationshipName)
-                        );
-                    }
-
                     const otherEntityName = relationship.otherEntityName;
                     const otherEntityData = this.getEntityJson(otherEntityName);
                     if (otherEntityData && otherEntityData.microserviceName && !otherEntityData.clientRootFolder) {
                         otherEntityData.clientRootFolder = otherEntityData.microserviceName;
                     }
-                    const jhiTablePrefix = context.jhiTablePrefix;
 
                     if (context.dto && context.dto === 'mapstruct') {
                         if (
@@ -920,25 +823,6 @@ module.exports = class extends BaseBlueprintGenerator {
                         }
                     }
 
-                    if (otherEntityName === 'user') {
-                        relationship.otherEntityTableName = `${jhiTablePrefix}_user`;
-                        context.hasUserField = true;
-                    } else {
-                        relationship.otherEntityTableName = otherEntityData ? otherEntityData.entityTableName : null;
-                        if (!relationship.otherEntityTableName) {
-                            relationship.otherEntityTableName = this.getTableName(otherEntityName);
-                        }
-                        if (jhiCore.isReservedTableName(relationship.otherEntityTableName, context.prodDatabaseType)) {
-                            const otherEntityTableName = relationship.otherEntityTableName;
-                            relationship.otherEntityTableName = `${jhiTablePrefix}_${otherEntityTableName}`;
-                        }
-                    }
-                    context.saveUserSnapshot =
-                        context.applicationType === 'microservice' &&
-                        context.authenticationType === 'oauth2' &&
-                        context.hasUserField &&
-                        context.dto === 'no';
-
                     if (_.isUndefined(relationship.otherEntityNamePlural)) {
                         relationship.otherEntityNamePlural = pluralize(relationship.otherEntityName);
                     }
@@ -947,78 +831,10 @@ module.exports = class extends BaseBlueprintGenerator {
                         relationship.otherEntityNameCapitalized = _.upperFirst(relationship.otherEntityName);
                     }
 
-                    if (_.isUndefined(relationship.otherEntityRelationshipNamePlural)) {
-                        if (relationship.relationshipType === 'many-to-one') {
-                            if (otherEntityData && otherEntityData.relationships) {
-                                otherEntityData.relationships.forEach(otherRelationship => {
-                                    if (
-                                        _.upperFirst(otherRelationship.otherEntityName) === entityName &&
-                                        otherRelationship.otherEntityRelationshipName === relationship.relationshipName &&
-                                        otherRelationship.relationshipType === 'one-to-many'
-                                    ) {
-                                        relationship.otherEntityRelationshipName = otherRelationship.relationshipName;
-                                        relationship.otherEntityRelationshipNamePlural = pluralize(otherRelationship.relationshipName);
-                                    }
-                                });
-                            }
-                        }
-                    }
-
-                    if (_.isUndefined(relationship.otherEntityAngularName)) {
-                        if (relationship.otherEntityNameCapitalized !== 'User') {
-                            const otherEntityAngularSuffix = otherEntityData ? otherEntityData.angularJSSuffix || '' : '';
-                            relationship.otherEntityAngularName =
-                                _.upperFirst(relationship.otherEntityName) + this.upperFirstCamelCase(otherEntityAngularSuffix);
-                        } else {
-                            relationship.otherEntityAngularName = 'User';
-                        }
-                    }
-
-                    if (_.isUndefined(relationship.otherEntityNameCapitalizedPlural)) {
-                        relationship.otherEntityNameCapitalizedPlural = pluralize(_.upperFirst(relationship.otherEntityName));
-                    }
-
                     if (_.isUndefined(relationship.otherEntityFieldCapitalized)) {
                         relationship.otherEntityFieldCapitalized = _.upperFirst(relationship.otherEntityField);
                     }
 
-                    if (_.isUndefined(relationship.otherEntityStateName)) {
-                        relationship.otherEntityStateName = _.kebabCase(relationship.otherEntityAngularName);
-                    }
-                    if (_.isUndefined(relationship.otherEntityModuleName)) {
-                        if (relationship.otherEntityNameCapitalized !== 'User') {
-                            relationship.otherEntityModuleName = `${context.angularXAppName +
-                                relationship.otherEntityNameCapitalized}Module`;
-                            relationship.otherEntityFileName = _.kebabCase(relationship.otherEntityAngularName);
-                            if (context.skipUiGrouping || otherEntityData === undefined || otherEntityData.clientRootFolder === undefined) {
-                                relationship.otherEntityClientRootFolder = '';
-                            } else {
-                                relationship.otherEntityClientRootFolder = `${otherEntityData.clientRootFolder}/`;
-                            }
-                            if (otherEntityData !== undefined && otherEntityData.clientRootFolder) {
-                                if (context.clientRootFolder === otherEntityData.clientRootFolder) {
-                                    relationship.otherEntityModulePath = relationship.otherEntityFileName;
-                                } else {
-                                    relationship.otherEntityModulePath = `${
-                                        context.entityParentPathAddition ? `${context.entityParentPathAddition}/` : ''
-                                    }${otherEntityData.clientRootFolder}/${relationship.otherEntityFileName}`;
-                                }
-                                relationship.otherEntityModelName = `${otherEntityData.clientRootFolder}/${
-                                    relationship.otherEntityFileName
-                                }`;
-                                relationship.otherEntityPath = `${otherEntityData.clientRootFolder}/${relationship.otherEntityFileName}`;
-                            } else {
-                                relationship.otherEntityModulePath = `${
-                                    context.entityParentPathAddition ? `${context.entityParentPathAddition}/` : ''
-                                }${relationship.otherEntityFileName}`;
-                                relationship.otherEntityModelName = relationship.otherEntityFileName;
-                                relationship.otherEntityPath = relationship.otherEntityFileName;
-                            }
-                        } else {
-                            relationship.otherEntityModuleName = `${context.angularXAppName}SharedModule`;
-                            relationship.otherEntityModulePath = 'app/core';
-                        }
-                    }
                     // Load in-memory data for root
                     if (relationship.relationshipType === 'many-to-many' && relationship.ownerSide) {
                         context.fieldsContainOwnerManyToMany = true;
@@ -1083,7 +899,7 @@ module.exports = class extends BaseBlueprintGenerator {
                 if (this.isJhipsterVersionLessThan('5.0.0')) {
                     this.removeFile(`${constants.ANGULAR_DIR}entities/${entityName}/${entityName}.model.ts`);
                 }
-            },
+            }
         };
     }
 
