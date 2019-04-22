@@ -619,6 +619,39 @@ describe('JHipster generator for entity', () => {
                     assert.fileContent(`${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/domain/Foo.java`, /@ApiModelProperty/);
                 });
             });
+
+            describe('boolean attribute with name starting with "is"', () => {
+                before(done => {
+                    helpers
+                        .run(require.resolve('../generators/entity'))
+                        .inTmpDir(dir => {
+                            fse.copySync(path.join(__dirname, '../test/templates/default-ng2'), dir);
+                            fse.copySync(
+                                path.join(__dirname, '../test/templates/export-jdl/.jhipster/Employee.json'),
+                                path.join(dir, '.jhipster/Foo.json')
+                            );
+                        })
+                        .withArguments(['Foo'])
+                        .withOptions({ regenerate: true, force: true })
+                        .on('end', done);
+                });
+
+                it('creates correct getter and setter on server side', () => {
+                    const domainFile = `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/domain/Foo.java`;
+                    assert.file([domainFile]);
+                    assert.fileContent(domainFile, 'Boolean isActive()');
+                    assert.fileContent(domainFile, 'void setActive(Boolean isActive)');
+                    const dtoFile = `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/service/dto/FooDTO.java`;
+                    assert.file([dtoFile]);
+                    assert.fileContent(dtoFile, 'Boolean isActive()');
+                    assert.fileContent(dtoFile, 'void setActive(Boolean isActive)');
+                });
+                it('creates correct model on client side', () => {
+                    const modelFile = `${CLIENT_MAIN_SRC_DIR}app/shared/model/foo-myentities.model.ts`;
+                    assert.file([modelFile]);
+                    assert.fileContent(modelFile, 'isActive?: boolean;');
+                });
+            });
         });
 
         context('microservice', () => {

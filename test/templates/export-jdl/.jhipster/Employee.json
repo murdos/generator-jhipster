@@ -57,6 +57,10 @@
         {
             "fieldName": "commissionPct",
             "fieldType": "Long"
+        },
+        {
+            "fieldName": "isActive",
+            "fieldType": "Boolean"
         }
     ],
     "changelogDate": "20160926083805",

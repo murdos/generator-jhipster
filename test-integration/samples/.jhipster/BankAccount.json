@@ -62,6 +62,10 @@
             "fieldType": "Boolean"
         },
         {
+            "fieldName": "isDeleted",
+            "fieldType": "Boolean"
+        },
+        {
             "fieldName": "accountType",
             "fieldType": "BankAccountType",
             "fieldValues": "CHECKING,SAVINGS,LOAN"

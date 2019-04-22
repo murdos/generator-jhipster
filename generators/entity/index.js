@@ -774,8 +774,17 @@ class EntityGenerator extends BaseBlueprintGenerator {
                         if (field.fieldName.length > 1) {
                             const firstLetter = field.fieldName.charAt(0);
                             const secondLetter = field.fieldName.charAt(1);
+                            const thirdLetter = field.fieldName.charAt(2);
                             if (firstLetter === firstLetter.toLowerCase() && secondLetter === secondLetter.toUpperCase()) {
                                 field.fieldInJavaBeanMethod = firstLetter.toLowerCase() + field.fieldName.slice(1);
+                            } else if (
+                                field.fieldType === 'Boolean' &&
+                                field.fieldName.startsWith('is') &&
+                                thirdLetter === thirdLetter.toUpperCase()
+                            ) {
+                                // Handle boolean field starting with 'is' in a particular way, as most IDE and lombok do
+                                // See e.g. https://projectlombok.org/features/GetterSetter
+                                field.fieldInJavaBeanMethod = field.fieldName.slice(2);
                             } else {
                                 field.fieldInJavaBeanMethod = _.upperFirst(field.fieldName);
                             }
