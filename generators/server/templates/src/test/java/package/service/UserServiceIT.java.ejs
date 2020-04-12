@@ -376,12 +376,6 @@ public class UserServiceIT <% if (databaseType === 'neo4j') { %>extends Abstract
         <%_ if (databaseType === 'sql' && !reactive) { _%>
         when(dateTimeProvider.getNow()).thenReturn(Optional.of(now.minus(4, ChronoUnit.DAYS)));
         <%_ } _%>
-        <%_ if (searchEngine === 'elasticsearch' && reactive) { _%>
-        // Configure the mock search repository
-        when(mockUserSearchRepository.save(any()))
-            .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
-        when(mockUserSearchRepository.delete(any())).thenReturn(Mono.empty());
-        <%_ } _%>
         user.setActivated(false);
         user.setActivationKey(RandomStringUtils.random(20));
         <%= asEntity('User') %> dbUser = userRepository.save<% if (databaseType === 'sql' && !reactive) { %>AndFlush<% } %>(user)<% if (reactive) { %>.block()<% } %>;

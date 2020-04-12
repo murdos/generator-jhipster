@@ -288,11 +288,6 @@ public class UserResourceIT <% if (databaseType === 'neo4j') { %>extends Abstrac
     public void createUser() throws Exception {
         int databaseSizeBeforeCreate = userRepository.findAll()<% if (reactive) { %>
             .collectList().block()<% } %>.size();
-        <%_ if (searchEngine === 'elasticsearch' && reactive) { _%>
-        // Configure the mock search repository
-        when(mockUserSearchRepository.save(any()))
-            .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
-        <%_ } _%>
 
         // Create the User
         ManagedUserVM managedUserVM = new ManagedUserVM();
@@ -592,11 +587,6 @@ public class UserResourceIT <% if (databaseType === 'neo4j') { %>extends Abstrac
     public void updateUser() throws Exception {
         // Initialize the database
         userRepository.save<% if (databaseType === 'sql' && !reactive) { %>AndFlush<% } %>(user)<% if (reactive) { %>.block()<% } %>;
-        <%_ if (searchEngine === 'elasticsearch' && reactive) { _%>
-        // Configure the mock search repository
-        when(mockUserSearchRepository.save(any()))
-            .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
-        <%_ } _%>
         int databaseSizeBeforeUpdate = userRepository.findAll()<% if (reactive) { %>
             .collectList().block()<% } %>.size();
 
@@ -658,11 +648,6 @@ public class UserResourceIT <% if (databaseType === 'neo4j') { %>extends Abstrac
     public void updateUserLogin() throws Exception {
         // Initialize the database
         userRepository.save<% if (databaseType === 'sql' && !reactive) { %>AndFlush<% } %>(user)<% if (reactive) { %>.block()<% } %>;
-        <%_ if (searchEngine === 'elasticsearch' && reactive) { _%>
-        // Configure the mock search repository
-        when(mockUserSearchRepository.save(any()))
-            .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
-        <%_ } _%>
         int databaseSizeBeforeUpdate = userRepository.findAll()<% if (reactive) { %>
             .collectList().block()<% } %>.size();
 

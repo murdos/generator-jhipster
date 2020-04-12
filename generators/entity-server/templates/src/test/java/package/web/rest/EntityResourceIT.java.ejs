@@ -526,11 +526,6 @@ public class <%= entityClass %>ResourceIT <% if (databaseType === 'neo4j') { %>e
     public void create<%= entityClass %>() throws Exception {
         int databaseSizeBeforeCreate = <%= entityInstance %>Repository.findAll()<% if (reactive) { %>
             .collectList().block()<% } %>.size();
-    <%_ if (reactive && searchEngine === 'elasticsearch') { _%>
-        // Configure the mock search repository
-        when(mock<%= entityClass %>SearchRepository.save(any()))
-            .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
-    <%_ } _%>
         // Create the <%= entityClass %>
         <%_ if (dto === 'mapstruct') { _%>
         <%= asDto(entityClass) %> <%= asDto(entityInstance) %> = <%= entityInstance %>Mapper.toDto(<%= asEntity(entityInstance) %>);
@@ -1160,11 +1155,6 @@ public class <%= entityClass %>ResourceIT <% if (databaseType === 'neo4j') { %>e
     @Test<% if (databaseType === 'sql') { %>
     @Transactional<% } %>
     public void update<%= entityClass %>() throws Exception {
-    <%_ if (reactive && searchEngine === 'elasticsearch') { _%>
-        // Configure the mock search repository
-        when(mock<%= entityClass %>SearchRepository.save(any()))
-            .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
-    <%_ } _%>
         // Initialize the database
         <%_ if (databaseType === 'cassandra') { _%>
         <%= asEntity(entityInstance) %>.setId(UUID.randomUUID());
@@ -1282,10 +1272,6 @@ public class <%= entityClass %>ResourceIT <% if (databaseType === 'neo4j') { %>e
     public void delete<%= entityClass %>() <% if (!reactive) { %>throws Exception <% } %>{
 <%_ if (reactive && searchEngine === 'elasticsearch') { _%>
         // Configure the mock search repository
-    <%_ if (service !== 'no') { _%>
-        when(mock<%= entityClass %>SearchRepository.save(any()))
-            .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
-    <%_ } _%>
         when(mock<%= entityClass %>SearchRepository.deleteById(any<%= primaryKeyType %>())).thenReturn(Mono.empty());
 <%_ } _%>
         // Initialize the database
@@ -1334,8 +1320,6 @@ public class <%= entityClass %>ResourceIT <% if (databaseType === 'neo4j') { %>e
     public void search<%= entityClass %>() <% if (!reactive) { %>throws Exception <% } %>{
         // Configure the mock search repository
 <%_ if (reactive) { _%>
-        when(mock<%= entityClass %>SearchRepository.save(any()))
-            .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
     <%_ if (pagination !== 'no') { _%>
         when(mock<%= entityClass %>SearchRepository.count()).thenReturn(Mono.just(1L));
     <%_ } _%>
