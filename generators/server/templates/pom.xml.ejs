@@ -43,6 +43,13 @@
             <url>https://repo.spring.io/milestone</url>
         </repository>
         <%_ } _%>
+        <%_ if (JHIPSTER_DEPENDENCIES_VERSION.endsWith('-SNAPSHOT')) { _%>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages for JHipster framework and dependencies</name>
+            <url>https://maven.pkg.github.com/jhipster/jhipster</url>
+        </repository>
+        <%_ } _%>
         <!-- jhipster-needle-maven-repository -->
     </repositories>
 

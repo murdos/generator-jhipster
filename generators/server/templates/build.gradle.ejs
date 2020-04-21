@@ -269,6 +269,18 @@ repositories {
         }
     }
     <%_ } _%>
+    <%_ if (JHIPSTER_DEPENDENCIES_VERSION.endsWith('-SNAPSHOT')) { _%>
+    maven {
+        url "https://maven.pkg.github.com/jhipster/jhipster"
+        credentials {
+            username = project.findProperty("github.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("github.token") ?: System.getenv("GITHUB_TOKEN")
+        }
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+    <%_ } _%>
     //jhipster-needle-gradle-repositories - JHipster will add additional repositories
 }
 

@@ -139,6 +139,8 @@ jobs:
               run: $JHI_SCRIPTS/20-docker-compose.sh
             - name: 'TESTS: backend'
               run: $JHI_SCRIPTS/21-tests-backend.sh
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: 'TESTS: frontend'
               run: $JHI_SCRIPTS/22-tests-frontend.sh
             - name: 'TESTS: packaging'

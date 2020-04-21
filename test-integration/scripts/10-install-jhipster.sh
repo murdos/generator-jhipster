@@ -18,6 +18,9 @@ if [[ "$JHI_REPO" == *"/jhipster" ]]; then
 elif [[ "$JHI_LIB_BRANCH" == "release" ]]; then
     echo "*** jhipster: use release version"
 
+elif [[ "$JHI_GITHUB_CI" == "true" && "$JHI_LIB_BRANCH" == "master" && "$JHI_LIB_REPO" == "https://github.com/jhipster/jhipster.git" ]]; then
+    echo "*** jhipster: use snapshot version from github packages"
+
 else
     echo "*** jhipster: JHI_LIB_REPO=$JHI_LIB_REPO with JHI_LIB_BRANCH=$JHI_LIB_BRANCH"
     git clone "$JHI_LIB_REPO" jhipster

@@ -9,6 +9,11 @@ if [[ "$JHI_LIB_BRANCH" == "release" ]]; then
     exit 0
 fi
 
+if [[ "$JHI_GITHUB_CI" == "true" && "$JHI_LIB_BRANCH" == "master" && "$JHI_LIB_REPO" == "https://github.com/jhipster/jhipster.git" ]]; then
+    echo "*** no need to change version in generated project"
+    exit 0
+fi
+
 if [[ $JHI_VERSION == '' ]]; then
     JHI_VERSION=0.0.0-CICD
 fi
