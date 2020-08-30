@@ -11,6 +11,7 @@ if [ -f "mvnw" ]; then
     ./mvnw -ntp enforcer:display-info --batch-mode
 elif [ -f "gradlew" ]; then
     ./gradlew -v
+    ./gradlew dependencies --configuration compileClasspath
 fi
 
 #-------------------------------------------------------------------------------
