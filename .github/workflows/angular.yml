@@ -177,10 +177,10 @@ jobs:
             #----------------------------------------------------------------------
             # Launch tests
             #----------------------------------------------------------------------
-            - name: 'TESTS: Start docker-compose containers'
-              run: $JHI_SCRIPTS/20-docker-compose.sh
             - name: 'TESTS: backend'
               run: $JHI_SCRIPTS/21-tests-backend.sh
+            - name: 'TESTS: Start docker-compose containers'
+              run: $JHI_SCRIPTS/20-docker-compose.sh
             - name: 'TESTS: frontend'
               run: $JHI_SCRIPTS/22-tests-frontend.sh
             - name: 'TESTS: packaging'
