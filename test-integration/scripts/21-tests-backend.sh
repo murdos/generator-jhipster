@@ -73,13 +73,5 @@ if [ -f "mvnw" ]; then
         -Dlogging.level.org.springframework.security=OFF
 
 elif [ -f "gradlew" ]; then
-    ./gradlew test integrationTest $JHI_GRADLE_EXCLUDE_WEBPACK $JHI_GRADLE_ENABLE_TESTCONTAINERS \
-        -Dlogging.level.ROOT=OFF \
-        -Dlogging.level.org.testcontainers=INFO \
-        -Dlogging.level.org.zalando=OFF \
-        -Dlogging.level.io.github.jhipster=OFF \
-        -Dlogging.level.io.github.jhipster.sample=OFF \
-        -Dlogging.level.org.springframework=OFF \
-        -Dlogging.level.org.springframework.web=OFF \
-        -Dlogging.level.org.springframework.security=OFF
+    ./gradlew test integrationTest $JHI_GRADLE_EXCLUDE_WEBPACK $JHI_GRADLE_ENABLE_TESTCONTAINERS
 fi
