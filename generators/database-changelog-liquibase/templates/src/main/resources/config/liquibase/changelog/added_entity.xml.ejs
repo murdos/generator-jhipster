@@ -28,6 +28,9 @@
         Added the entity <%= entity.entityClass %>.
     -->
     <changeSet id="<%= changelogDate %>-1" author="jhipster">
+        <%_ if (fields.some(field => field.id && field.jpaGeneratedValue === 'sequence')) { _%>
+        <createSequence sequenceName="seq_<%= entity.entityTableName %>" incrementBy="50" startValue="50"/>
+        <%_ } _%>
         <createTable tableName="<%= entity.entityTableName %>"<%- formatAsLiquibaseRemarks(entity.javadoc, true) %>>
             <%_ for (field of fields) { _%>
             <column name="<%= field.columnName %>" type="<%= field.columnType %>"<%- formatAsLiquibaseRemarks(field.javadoc, true) %><% if (field.id && field.liquibaseAutoIncrement) { %> autoIncrement="true" <%_ } %>>

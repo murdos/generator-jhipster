@@ -187,8 +187,8 @@ public class <%= asEntity(entityClass) %> implements Serializable {
         <%_ if (primaryKey.fields[0].jpaGeneratedValue === 'identity') { _%>
     @GeneratedValue(strategy = GenerationType.IDENTITY)
         <%_ } else if (primaryKey.fields[0].jpaGeneratedValue === 'sequence') { _%>
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "<%= entityInstance %>SequenceGenerator")
+    @SequenceGenerator(name = "<%= entityInstance %>SequenceGenerator", sequenceName = "seq_<%= entityTableName %>")
         <%_ } else if (primaryKey.fields[0].jpaGeneratedValue) { _%>
     @GeneratedValue
         <%_ } _%>
